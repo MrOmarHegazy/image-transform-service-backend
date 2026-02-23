@@ -20,3 +20,7 @@ pnpm-debug.log*
 
 # Editor
 .vscode/
+
+# temp debug scripts
+get-token.js
+get-token.mjs

@@ -6,6 +6,12 @@ export async function authMiddleware(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
+  // Let CORS preflight pass (no auth header on OPTIONS)
+  if (req.method === "OPTIONS") {
+    next();
+    return;
+  }
+
   const header = req.headers.authorization;
 
   if (!header || !header.startsWith("Bearer ")) {
@@ -15,7 +21,7 @@ export async function authMiddleware(
     return;
   }
 
-  const token = header.slice(7);
+  const token = header.slice(7).trim();
 
   const { data, error } = await supabase.auth.getUser(token);
 

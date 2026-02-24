@@ -4,12 +4,23 @@ import cors from "cors";
 import { config } from "./config";
 import { authMiddleware } from "./middleware/auth";
 import imagesRouter from "./routes/images";
-
 import "./types";
 
 const app = express();
 
-app.use(cors({ origin: config.CORS_ORIGIN }));
+//  Allowlist origins + allow Authorization header + handle OPTIONS
+app.use(
+  cors({
+    origin: config.CORS_ORIGIN, // can be string or array (see note below)
+    credentials: false,
+    methods: ["GET", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Authorization", "Content-Type"],
+  }),
+);
+
+//  Ensure preflight requests get a 204/200 before hitting auth
+app.options("*", cors());
+
 app.use(express.json());
 
 app.get("/health", (_req: Request, res: Response) => {

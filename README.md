@@ -1,15 +1,29 @@
 # Image Transformation Service — Backend
 
-Express/TypeScript backend that removes image backgrounds (Clipdrop API), flips them horizontally (sharp), and stores the results in Supabase Storage + database.
+Express + TypeScript API that:
+1) accepts an authenticated image upload,
+2) removes background via Clipdrop,
+3) flips horizontally via sharp,
+4) stores results in Supabase Storage + Postgres,
+5) returns a shareable URL and supports listing + deletion.
 
-## Prerequisites
+## Live
+- Base API URL: https://image-transform-service-backend.onrender.com
+- Health: https://image-transform-service-backend.onrender.com/health
 
-- Node.js 18+
-- A Supabase project with:
-  - A **public** storage bucket named `images`
-  - A `public.images` table (see schema below)
-  - RLS policies for both table and storage
-- A [Clipdrop](https://clipdrop.co/) API key
+## Tech
+- Node.js + Express (TypeScript)
+- Supabase Auth (JWT), Storage, Postgres (RLS)
+- Clipdrop API (background removal)
+- sharp (flip)
+
+---
+
+## Supabase Setup
+
+### Storage
+- Bucket: `images` (public)
+- Objects stored under: `images/<uid>/<imageId>.png`
 
 ### Supabase Table Schema
 
@@ -38,7 +52,7 @@ create policy "Users can delete own images"
   using (auth.uid() = user_id);
 ```
 
-### Supabase Storage Policies
+### Supabase Storage RLS Policies
 
 On the `images` bucket (public), create policies so authenticated users can only operate within their own `<uid>/` folder:
 
